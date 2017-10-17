@@ -41,7 +41,7 @@ fclose(fid);
 dict = dict{1};
 phones = cell(size(words));
 % search for entries and output cell array of phonemes matching search
-for ind = 1:length(words)
+for ind = 1:numel(words)
     word = words{ind};
     len = length(word);
     %search dictionary
@@ -58,7 +58,11 @@ for ind = 1:length(words)
     linesplit = regexp(lines,'  ','split');
     linecheck = [linesplit{:}];
     linecheck = char(linecheck(1:2:end));
-    test = linecheck(:,len+1)==' ' | linecheck(:,len+1)=='(';
+    if size(linecheck,1) == 1
+        test = 1;
+    else
+        test = linecheck(:,len+1)==' ' | linecheck(:,len+1)=='(';
+    end
     phones{ind} = cellfun(@(x) x{2},linesplit(test),'UniformOutput',false);
 end
 end

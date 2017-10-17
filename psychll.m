@@ -1,4 +1,4 @@
-function [ sse ] = psychlsqn( x,y,mu,sig,chance,ceil)
+function [ nll ] = psychll( x,y,mu,sig,chance,ceil)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 x = x(:);
@@ -23,9 +23,9 @@ y = y(~nonans,:);
 for i=1:size(y,2)
     yfit(:,i) = simpsych(x,mu(i),sig(i),chance(i),ceil(i)); 
 end
-err = yfit - y;
-ss(i) = sum(err(:).^2);
-sse = mean(ss);
+r1 = yfit;
+r0 = 1-yfit;
+nll = -(sum(log(r1(y==1)))+sum(log(r0(y==0))));
 
 end
 

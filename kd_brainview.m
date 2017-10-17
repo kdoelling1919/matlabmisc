@@ -54,7 +54,9 @@ for t = 1:finish;
     end
     ylim = get(gca,'ylim');
     hold on;
-    tindx=plot((begseg(t)+endseg(t))/2.*[1 1],ylim,'--k');
+    tindx = patch([begseg(t).*[1; 1]; endseg(t).*[1;1]], [ylim';flipud(ylim')], 'k');
+    set(tindx, 'FaceAlpha', 0.1);
+    set(gca,'ylim',ylim)
     drawnow
 %         pause(.2);
 
@@ -64,10 +66,14 @@ while ishandle(fh)
     axes(ax(2));
     [x,~]=ginput(1);
     delete(tindx);
-    tindx = plot(x.*[1 1],ylim,'--k');
+    beg = x - win/2;
+    fin = x + win/2;
+    tindx = patch([beg.*[1; 1]; fin.*[1;1]], [ylim';flipud(ylim')], 'k');
+    set(tindx, 'FaceAlpha', 0.1);
     cla(ax(1),'reset');
     timerange = time >= x-win/2& time <= x+win/2;
     topo = squeeze(mean(data(:,timerange),2));
+    set(gca,'ylim',ylim) 
     axes(ax(1));
     ft_plot_topo(layout.pos(1:length(topo),1),layout.pos(1:length(topo),2),topo,...
         'interpmethod','v4','style','isofill','clim',[-mult mult].*clim,...
@@ -90,6 +96,7 @@ while ishandle(fh)
     templay.label = layout.label(best);
     ft_plot_lay(templay,'pointsymbol','.','pointcolor','w','pointsize',10,'box','no','label','no');
     title([num2str(x) ' seconds']);
+
 end
 
 

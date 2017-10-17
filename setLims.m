@@ -1,7 +1,18 @@
 function [ L ] = setLims( varargin )
 %setLims sets the Limits of multiple axes subplotted in a figure to be
 %the same
-%   H is the handle of the figure or of the axes you want to set straight
+%   setLims(H, axis)
+%   H: is the handle of the figure or of the axes you want to set straight
+%   axis: is either 'xlim', 'ylim' or 'clim' and denotes the axis to adjust
+%
+%   this use will set the specified axis to the minimum and maximum of all
+%   the color limits in the figure
+%
+%   setlims(H, axis, lims)
+%   lims: [a b] where a and b are the min and max of the limits to set all axes to.
+%
+%   this use will set all of the axes to the limit specified by you rather than
+%   automatically selected in the previous use case
 
 if length(varargin) == 1;
     error('Not enough inputs. You must specify which axis you would like to be altered');

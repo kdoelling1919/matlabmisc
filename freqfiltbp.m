@@ -35,9 +35,9 @@ if length(cutoffs) == 2
         ff2 = normpdf(f(1:length(f)/2),f(indf(2)),numdev);
         ff(indf(1):end) = max(ff);
         ff2(1:indf(2)) = max(ff2);
-        if cutoffs(2) > cutoffs(1)
+        if cutoffs(2) >= cutoffs(1)
             freqfilt = min(ff,ff2);
-        elseif cutoffs(2) <= cutoffs(1)
+        elseif cutoffs(2) < cutoffs(1)
             freqfilt = max(ff,ff2);
         end
         freqfilt = freqfilt([1:length(f)/2 length(f)/2:-1:1]);

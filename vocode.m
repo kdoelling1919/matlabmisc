@@ -1,4 +1,4 @@
-function [ noisespeech ] = vocode( audio, Fs, freq_range, bandnum,noiseorsin )
+function [ noisespeech ] = vocode( audio, Fs, freq_range, bandnum, noiseorsin, stop )
 % noisevocode takes an auditory input and replaces it with a noise-voded
 % version of the original signal.
 % audio = the signal to be vocoded
@@ -34,6 +34,7 @@ cbEnv = zeros(Len,length(wnl));
             [r]=fu_Hilbert(xout,len);
 
             cbEnv(:,m) = IIRfilt(r,10*2/Fs,15*2/Fs,'cheby1',5,25);
+            if stop
             carrier(:,m) = fu_carrier(len,wnl,wnh,m,bw);
         end
 switch noiseorsin

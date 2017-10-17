@@ -52,10 +52,10 @@ else
                 for i = 1:numbars
                     % Based on barweb.m by Bolu Ajiboye from MATLAB File Exchange
                     x = (1:numgroups) - groupwidth/2 + (2*i-1) * groupwidth / (2*numbars); % Aligning error bar with individual bar
-                    errorbar(x, Y(:,i), E(:,i), 'k', 'linestyle', 'none');
+                    errorbar_handle(i) = errorbar(x, Y(:,i), E(:,i), 'k', 'linestyle', 'none');
                 end
             else
-                errorbar(1:length(X),Y,E, 'k', 'linestyle', 'none');
+                errorbar_handle=errorbar(1:length(X),Y,E, 'k', 'linestyle', 'none');
             end
         end
     else
@@ -72,7 +72,7 @@ else
             for i = 1:numbars
                 % Based on barweb.m by Bolu Ajiboye from MATLAB File Exchange
                 x = X - groupwidth/2 + (2*i-1) * groupwidth / (2*numbars); % Aligning error bar with individual bar
-                errorbar(x, Y(:,i), E(:,i), 'k', 'linestyle', 'none');
+                errorbar_handle(i) = errorbar(x, Y(:,i), E(:,i), 'k', 'linestyle', 'none');
             end
         end
     end
