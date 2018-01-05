@@ -1,13 +1,16 @@
-function [ xsyn, Fs ] = OG_vocode( audio, Fs, freq_range, bandnum, condition, chan, nomod, noiseorsin )
-%UNTITLED3 Summary of this function goes here
+function [ xsyn, Fs ] = OG_vocodemus( audio, Fs, condition, chan, nomod, noiseorsin, envfiltfq )
+% OG_vocodemus optimizes sine vocoding for piano music
 %   Detailed explanation goes here
-LowCutoff=16;
+LowCutoff=envfiltfq;
 
 %% Load input signal
 if ischar(audio)
     [isin, Fs] = audioread(audio);
 elseif isvector(audio) && isnumeric(audio)
     isin = audio;
+    if isrow(isin)
+        isin = isin';
+    end
 end
 Len=round(length(isin));
 nbx=512;
@@ -15,7 +18,9 @@ bw=Fs/2;
 bw0=100;
 reFs=2*bw0; 
 
-[wnl, wnh] = bandspacing(freq_range, bandnum);
+pianobounds = 2.^(((.5:88.5)-49)./12).*440; % assume piano is tuned to 440
+wnl = pianobounds(1:end-1);
+wnh = pianobounds(2:end);
 wnl=wnl/bw;
 wnh=wnh/bw;
 
@@ -31,11 +36,12 @@ wnh=wnh/bw;
     nb0=nb; bb0=bn;
 
     xx=zeros(1,Len); xout=zeros(1,Len);
-    for m=1:bandnum
+    for m=1:length(wnl)
         len=Len;
         %% Critical Band filtering
-        xout=fu_CB_filter(isin,len,wnl,wnh,m);
-        xx=xx+xout;
+        xout = fu_CB_filter(isin,len,wnl,wnh,m);
+
+         xx = xx + xout;
         %% Hilbert
         [r theta]=fu_Hilbert(xout,len);
         %% Downsampling -- Upsampling inside fu_mod_filter
@@ -49,7 +55,7 @@ wnh=wnh/bw;
 
 %% Synthesis    
     xsyn=zeros(1,Len);
-    for m=1:bandnum
+    for m=1:length(wnl)
         clear rlp
         if isempty(nomod) || ~nomod
             if strcmp(chan, 'narrow') || isempty(chan)
@@ -63,7 +69,7 @@ wnh=wnh/bw;
         len=min(length(theta),length(s0));
         rlp(1:len)=s0(1:len); clear s0
         %% Carrier
-        avgF = mean([wnl(m) wnh(m)]);
+        avgF = geomean([wnl(m) wnh(m)]);
         switch noiseorsin
             case 'noise'
                 % cosine noise carrier
@@ -74,7 +80,7 @@ wnh=wnh/bw;
                 cosf0 = sin(pi*Fs*avgF.*t);
         end
         %% Synthesis
-        s0=rlp.*cosf0.*log(Fs*avgF); % give boost to higher frequencies
+        s0=rlp.*cosf0;%.*log(Fs*avgF); % give boost to higher frequencies
         xsyn(1:len)=xsyn(1:len)+s0(1:len);
         clear cosf0 s0
     end
